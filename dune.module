@@ -1,0 +1,12 @@
+################################
+# Dune module information file #
+################################
+
+# Name of the module
+Module: dune-io
+Version: 1.0
+Maintainer: dennis.glaeser@iws.uni-stuttgart.de
+# Required build dependencies
+Depends: dune-grid
+# Optional build dependencies
+Suggests: dune-localfunctions dune-functions
