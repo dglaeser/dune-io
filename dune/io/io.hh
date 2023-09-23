@@ -103,12 +103,6 @@ class GridWriter
         }, prec);
     }
 
-    template<GridFormat::Concepts::CellFunction<Grid> F,
-             GridFormat::Concepts::Scalar T = GridFormat::FieldScalar<std::invoke_result_t<F, Cell>>>
-        requires(not GridFormat::Concepts::CellFunction<F, GridView>)
-    void addCellData(const std::string& name, F&& f, const GridFormat::Precision<T>& prec = {})
-    { writer_.set_cell_field(name, std::move(f), prec); }
-
     template<typename F>
         requires(std::is_lvalue_reference_v<F>)
     void addCellData(const std::string& name, F&& f)
