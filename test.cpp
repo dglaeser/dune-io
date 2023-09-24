@@ -15,6 +15,11 @@ auto measure(const Action& action) {
     return timer.elapsed();
 }
 
+template<typename T>
+T copy(T t) {
+    return t;
+}
+
 int main(int argc, char** argv) {
     const auto& helper = Dune::MPIHelper::instance(argc, argv);
     const int numCells = argc > 1 ? std::atoi(argv[1]) : 10;
@@ -68,20 +73,17 @@ int main(int argc, char** argv) {
         std::cout << "Standard write took " << time_standard << std::endl;
 
     const auto time_higher_order = measure([&] () {
-        Dune::Timer timer;
         Dune::IO::GridWriter higherOrderWriter{format, gridView, Dune::IO::Order<2>{}};
-        timer.stop();
-        std::cout << "Constructing higher-order grid took " << timer.elapsed() << std::endl;
         higherOrderWriter.addCellData("cfunc", f, Dune::IO::Precision::float32);
         higherOrderWriter.addCellData("cdata", [&] (const Element& element) {
             return cellData.at(gridView.indexSet().index(element));
         }, Dune::IO::Precision::float32);
         higherOrderWriter.addPointData("pfunc", f, Dune::IO::Precision::float32);
-        higherOrderWriter.addPointData("pfunc2", f, Dune::IO::Precision::float32);
+        higherOrderWriter.addPointData("pfunc_owning", copy(f), Dune::IO::Precision::float32);
         higherOrderWriter.write("higher_order");
     });
     if (helper.rank() == 0)
-        std::cout << "Higher-order write took " << time_higher_order << std::endl;
+        std::cout << "Higher-order grid construction + write took " << time_higher_order << std::endl;
 
     return 0;
 }
