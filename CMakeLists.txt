@@ -27,10 +27,12 @@ add_subdirectory(cmake/modules)
 
 set(CMAKE_BUILD_TYPE Release)
 
+find_package(MPI)  # TODO: double-check why HAVE_MPI is not set automatically
+
 dune_add_test(NAME test_io SOURCES test.cpp)
 target_link_libraries(test_io PRIVATE gridformat::gridformat)
 target_compile_options(test_io PRIVATE "-Wno-abi")
-target_compile_definitions(test_io PRIVATE HAVE_MPI=1)
+target_compile_definitions(test_io PRIVATE HAVE_MPI=${MPI_FOUND})
 
 # finalize the dune project, e.g. generating config.h etc.
 finalize_dune_project(GENERATE_CONFIG_H_CMAKE)
