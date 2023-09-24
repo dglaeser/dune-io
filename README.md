@@ -2,7 +2,7 @@
 
 Clone this module with the flag `--recursive` in order to bring in the `GridFormat` library.
 
-Contains a single executable (required `dune-functions`):
+Contains a single executable (requires `dune-functions`):
 
 ```bash
 make test_io
