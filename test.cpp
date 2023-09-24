@@ -31,6 +31,7 @@ int main(int argc, char** argv) {
     const auto& gridView = grid.leafGridView();
     const auto f = Dune::Functions::makeAnalyticGridViewFunction([] (const auto& x) { return x[0]; }, gridView);
 
+    // match dune behaviour for time measurements to be comparable
     const auto format = Dune::IO::Format::vtu.with({
         .encoder = Dune::IO::Encoding::raw,
         .compressor = Dune::IO::Compression::none,
