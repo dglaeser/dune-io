@@ -97,19 +97,13 @@ class GridWriter
     template<GridFormat::Concepts::CellFunction<GridView> F,
              GridFormat::Concepts::Scalar T = GridFormat::FieldScalar<std::invoke_result_t<F, Element>>>
     void addCellData(const std::string& name, F&& f, const GridFormat::Precision<T>& prec = {})
-    {
-        writer_.set_cell_field(name, [&, _f=std::move(f)] (const auto& cell) {
-            return _f(GridFormat::Dune::Traits::Element<Grid>::get(grid_, cell));
-        }, prec);
-    }
+    { writer_.set_cell_field(name, std::move(f), prec); }
 
     template<typename F>
-        requires(std::is_lvalue_reference_v<F>)
     void addCellData(const std::string& name, F&& f)
     { GridFormat::Dune::set_cell_function(std::forward<F>(f), writer_, name); }
 
     template<typename F, GridFormat::Concepts::Scalar T>
-        requires(std::is_lvalue_reference_v<F>)
     void addCellData(const std::string& name, F&& f, const GridFormat::Precision<T>& prec)
     { GridFormat::Dune::set_cell_function(std::forward<F>(f), writer_, name, prec); }
 
@@ -117,17 +111,15 @@ class GridWriter
              GridFormat::Concepts::Scalar T = GridFormat::FieldScalar<std::invoke_result_t<F, Vertex>>>
     void addPointData(const std::string& name, F&& f, const GridFormat::Precision<T>& prec = {})
     {
-        static_assert(order == 1, "Point lambdas can only be used for order == 1");
+        static_assert(order == 1, "Point lambdas can only be used for order == 1. Use Dune::Functions instead.");
         writer_.set_point_field(name, std::move(f), prec);
     }
 
-    template<typename F>
-        requires(std::is_lvalue_reference_v<F> )
+    template<GridFormat::Dune::Concepts::Function<GridView> F>
     void addPointData(const std::string& name, F&& f)
     { GridFormat::Dune::set_point_function(std::forward<F>(f), writer_, name); }
 
-    template<typename F, GridFormat::Concepts::Scalar T>
-        requires(std::is_lvalue_reference_v<F> )
+    template<GridFormat::Dune::Concepts::Function<GridView> F, GridFormat::Concepts::Scalar T>
     void addPointData(const std::string& name, F&& f, const GridFormat::Precision<T>& prec)
     { GridFormat::Dune::set_point_function(std::forward<F>(f), writer_, name, prec); }
 
