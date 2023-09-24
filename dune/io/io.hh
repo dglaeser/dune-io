@@ -147,7 +147,7 @@ class GridWriter
     auto makeParallelWriter_(const Format& fmt, __MPI_COMM comm, Args&&... args) const
     {
         return GridFormat::Parallel::size(comm) > 1
-            ? GridFormat::Writer<Grid>{fmt, grid_, std::forward<Args>(args)..., comm}
+            ? GridFormat::Writer<Grid>{fmt, grid_, comm, std::forward<Args>(args)...}
             : GridFormat::Writer<Grid>{fmt, grid_, std::forward<Args>(args)...};
     }
 

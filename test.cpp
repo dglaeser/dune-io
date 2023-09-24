@@ -86,5 +86,17 @@ int main(int argc, char** argv) {
     if (helper.rank() == 0)
         std::cout << "Higher-order grid construction + write took " << time_higher_order << std::endl;
 
+    double t = 0.0;
+    Dune::IO::GridWriter time_series_writer{Dune::IO::Format::pvd_with(format), gridView, "time_series"};
+    time_series_writer.addCellData("cfunc", f, Dune::IO::Precision::float32);
+    time_series_writer.addPointData("pdata", [&] (const auto& point) {
+        return point.geometry().center()[0]*t;
+    });
+    std::ranges::for_each(std::views::iota(0, 2), [&] (int) {
+        if (helper.rank() == 0)
+            std::cout << "Writing step (t = " << t << ") of a time series" << std::endl;
+        time_series_writer.write(t);
+        t += 1.0;
+    });
     return 0;
 }
