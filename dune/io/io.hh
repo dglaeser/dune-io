@@ -87,26 +87,32 @@ class GridWriter
     , writer_{makeWriter_(fmt, filename)}
     {}
 
+    //! Write a single grid file
     std::string write(const std::string& name) const
     { return writer_.write(name); }
 
+    //! Write a step in a time series
     template<std::floating_point T>
     std::string write(T time) const
     { return writer_.write(time); }
 
+    //! Add cell data output via a lambda invoked with grid elements
     template<GridFormat::Concepts::CellFunction<GridView> F,
              GridFormat::Concepts::Scalar T = GridFormat::FieldScalar<std::invoke_result_t<F, Element>>>
     void addCellData(const std::string& name, F&& f, const GridFormat::Precision<T>& prec = {})
     { writer_.set_cell_field(name, std::move(f), prec); }
 
+    //! Add a Dune::Function as cell data
     template<typename F>
     void addCellData(const std::string& name, F&& f)
     { GridFormat::Dune::set_cell_function(std::forward<F>(f), writer_, name); }
 
+    //! Add a Dune::Function as cell data with custom precision
     template<typename F, GridFormat::Concepts::Scalar T>
     void addCellData(const std::string& name, F&& f, const GridFormat::Precision<T>& prec)
     { GridFormat::Dune::set_cell_function(std::forward<F>(f), writer_, name, prec); }
 
+    //! Add point data output via a lambda invoked with grid vertices
     template<GridFormat::Concepts::PointFunction<GridView> F,
              GridFormat::Concepts::Scalar T = GridFormat::FieldScalar<std::invoke_result_t<F, Vertex>>>
     void addPointData(const std::string& name, F&& f, const GridFormat::Precision<T>& prec = {})
@@ -115,14 +121,17 @@ class GridWriter
         writer_.set_point_field(name, std::move(f), prec);
     }
 
+    //! Add a Dune::Function as point data
     template<GridFormat::Dune::Concepts::Function<GridView> F>
     void addPointData(const std::string& name, F&& f)
     { GridFormat::Dune::set_point_function(std::forward<F>(f), writer_, name); }
 
+    //! Add a Dune::Function as point data with custom precision
     template<GridFormat::Dune::Concepts::Function<GridView> F, GridFormat::Concepts::Scalar T>
     void addPointData(const std::string& name, F&& f, const GridFormat::Precision<T>& prec)
     { GridFormat::Dune::set_point_function(std::forward<F>(f), writer_, name, prec); }
 
+    //! Clear all data
     void clear()
     { writer_.clear(); }
 
